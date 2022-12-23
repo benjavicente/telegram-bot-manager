@@ -35,5 +35,9 @@ COPY ./package.json ./pnpm-lock.yaml ./
 RUN pnpm install --prod --offline
 COPY ./docker-entrypoint.sh ./
 
+# Expose ports
+EXPOSE 8000
+EXPOSE 8080
+
 # Run pocketbase and the app
 ENTRYPOINT [ "/bin/bash", "./docker-entrypoint.sh" ]
