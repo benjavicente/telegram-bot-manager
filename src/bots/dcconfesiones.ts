@@ -81,7 +81,7 @@ export default {
 		return { group_id, group_title, counter: 0 };
 	},
 	async attach_to_instance(bot, { meta, ...record }) {
-		const timeFrame = 5_000;
+		const timeFrame = 30_000;
 		const timeLimit = 3;
 		const onLimitExceeded = (ctx: BotContext) => ctx.reply(`Limite de mensajes alcanzado ${timeLimit} en ${timeFrame / 1_000}s.`);
 
