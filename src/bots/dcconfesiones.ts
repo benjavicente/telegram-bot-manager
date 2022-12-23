@@ -103,27 +103,27 @@ export default {
 		});
 		bot.on("message:photo", async (ctx) => {
 			const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
-			await ctx.api.sendPhoto(meta.group_id, ctx.message.photo[0].file_id, { caption: `${ctx.prefix}${ctx.message.caption}`, caption_entities });
+			await ctx.api.sendPhoto(meta.group_id, ctx.message.photo[0].file_id, { caption: `${ctx.prefix}${ctx.message.caption ?? ""}`, caption_entities });
 		});
 		bot.on("message:video", async (ctx) => {
 			const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
-			await ctx.api.sendVideo(meta.group_id, ctx.message.video.file_id, { caption: `${ctx.prefix}${ctx.message.caption}`, caption_entities });
+			await ctx.api.sendVideo(meta.group_id, ctx.message.video.file_id, { caption: `${ctx.prefix}${ctx.message.caption ?? ""}`, caption_entities });
 		});
 		bot.on("message:animation", async (ctx) => {
 			const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
-			await ctx.api.sendAnimation(meta.group_id, ctx.message.animation.file_id, { caption: `${ctx.prefix}${ctx.message.caption}`, caption_entities });
+			await ctx.api.sendAnimation(meta.group_id, ctx.message.animation.file_id, { caption: `${ctx.prefix}${ctx.message.caption ?? ""}`, caption_entities });
 		});
 		bot.on("message:audio", async (ctx) => {
 			const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
-			await ctx.api.sendAudio(meta.group_id, ctx.message.audio.file_id, { caption: `${ctx.prefix}${ctx.message.caption}`, caption_entities });
+			await ctx.api.sendAudio(meta.group_id, ctx.message.audio.file_id, { caption: `${ctx.prefix}${ctx.message.caption ?? ""}`, caption_entities });
 		});
 		bot.on("message:voice", async (ctx) => {
 			const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
-			await ctx.api.sendVoice(meta.group_id, ctx.message.voice.file_id, { caption: `${ctx.prefix}${ctx.message.caption}`, caption_entities });
+			await ctx.api.sendVoice(meta.group_id, ctx.message.voice.file_id, { caption: `${ctx.prefix}${ctx.message.caption ?? ""}`, caption_entities });
 		});
 		bot.on("message:document", async (ctx) => {
 			const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
-			await ctx.api.sendDocument(meta.group_id, ctx.message.document.file_id, { caption: `${ctx.prefix}${ctx.message.caption}`, caption_entities });
+			await ctx.api.sendDocument(meta.group_id, ctx.message.document.file_id, { caption: `${ctx.prefix}${ctx.message.caption ?? ""}`, caption_entities });
 		});
 		bot.on("message:sticker", async (ctx) => {
 			await ctx.api.sendSticker(meta.group_id, ctx.message.sticker.file_id);
@@ -139,7 +139,7 @@ export default {
 			} else {
 				const { options, ...rest } = ctx.message.poll || {};
 				const text_options = ctx.message.poll.options.map((o) => o.text);
-				await ctx.api.sendPoll(meta.group_id, ctx.message.poll.question, text_options, rest);
+				await ctx.api.sendPoll(meta.group_id, `${ctx.prefix}${ctx.message.poll.question}`, text_options, rest);
 			}
 		});
 	},
