@@ -9,9 +9,13 @@ const router = new Router();
 
 app.use(async (ctx, next) => {
 	const initial_time = Date.now();
-	await next();
-	const final_time = Date.now();
-	console.log(`[${ctx.status}] ${ctx.method} ${ctx.url} - ${final_time - initial_time}ms`);
+	try {
+		await next();
+	} catch (err) {
+		const final_time = Date.now();
+		console.log(`[${ctx.status}] ${ctx.method} ${ctx.url} - ${final_time - initial_time}ms`);
+		throw err;
+	}
 });
 
 router
