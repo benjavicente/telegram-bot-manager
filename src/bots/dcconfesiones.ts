@@ -1,7 +1,7 @@
 import { MessageEntity, Update } from "grammy/types";
 import { BotBuilder, BotContext, BotRecord } from "../api/types.js";
 import { manager, db } from "../api/index.js";
-import { InlineKeyboard, NextFunction } from "grammy";
+import { InlineKeyboard } from "grammy";
 import { limit } from "@grammyjs/ratelimiter";
 
 class TrackJoinedGroups {
@@ -78,7 +78,7 @@ export default {
 		if (!group_title) throw new Error("El bot no se añadió a un grupo.");
 
 		await conversation.external(() => tracker.stopTracking(id));
-		return { group_id, group_title, counter: 0 };
+		return { group_id, group_title, counter: 0, stopped: false };
 	},
 	async attach_to_instance(bot, { meta, ...record }) {
 		const timeFrame = 30_000;
@@ -86,17 +86,45 @@ export default {
 		const onLimitExceeded = (ctx: BotContext) => ctx.reply(`Limite de mensajes alcanzado ${timeLimit} en ${timeFrame / 1_000}s.`);
 
 		bot.use(limit({ timeFrame, limit: timeLimit, onLimitExceeded }));
+
+		bot.use((ctx, next) => {
+			// Solo en chats privados
+			if (ctx.chat?.type === "private") return next();
+		});
+
+		bot.command("start", async (ctx) => {
+			if (meta.stopped) {
+				ctx.reply("El bot está desactivado.");
+			} else {
+				if (record.user_id !== ctx.from?.id) return await ctx.reply("👋");
+
+				meta.stopped = false;
+				await db.collection("bots").update<BotRecord>(record.id, { meta, ...record });
+				await ctx.reply("El bot está activado. Todos pueden mandar confesiones.");
+			}
+		});
+
+		bot.command("stop", async (ctx) => {
+			if (record.user_id !== ctx.from?.id) return;
+
+			meta.stopped = true;
+			await db.collection("bots").update<BotRecord>(record.id, { meta, ...record });
+			await ctx.reply("El bot ha sido desactivado. Solo tú puedes mandar confesiones.");
+		});
+
 		bot.on("message", async (ctx, next) => {
-			ctx.prefix = `Confesión #${meta.counter}\n`;
+			if (meta.stopped && record.user_id !== ctx.from?.id) return;
+
+			ctx.prefix = `Confesión #${meta.counter++}\n`;
 			try {
 				await next();
+				await db.collection("bots").update<BotRecord>(record.id, { meta, ...record });
 			} catch (e) {
 				console.error(e);
 				await ctx.reply("No se pudo enviar la confesión.");
 			}
-			meta.counter++;
-			await db.collection("bots").update<BotRecord>(record.id, { meta, ...record });
 		});
+
 		bot.on("message:text", async (ctx) => {
 			const entities = moveEntities(ctx.message.entities ?? [], ctx.prefix.length);
 			await ctx.api.sendMessage(meta.group_id, `${ctx.prefix}${ctx.message.text}`, { entities });
@@ -132,8 +160,6 @@ export default {
 			await ctx.api.sendDice(meta.group_id, ctx.message.dice.emoji);
 		});
 		bot.on("message:poll", async (ctx) => {
-			// TODO: Resend poll if the poll was resended
-			console.log(ctx.message);
 			if (ctx.message.forward_from) {
 				await ctx.api.forwardMessage(meta.group_id, ctx.from.id, ctx.message.message_id);
 			} else {
@@ -143,4 +169,4 @@ export default {
 			}
 		});
 	},
-} satisfies BotBuilder<{ group_id: number; counter: number }, { prefix: string }>;
+} satisfies BotBuilder<{ group_id: number; counter: number; stopped: boolean }, { prefix: string }>;
