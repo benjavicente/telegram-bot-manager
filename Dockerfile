@@ -36,5 +36,4 @@ RUN pnpm install --prod --offline
 COPY ./docker-entrypoint.sh ./
 
 # Run pocketbase and the app
-ENV DB_URL="http://0.0.0.0:5679"
 ENTRYPOINT [ "/bin/bash", "./docker-entrypoint.sh" ]

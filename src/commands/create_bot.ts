@@ -49,7 +49,12 @@ const create_bot_conversation: ConversationFn = async (conversation, ctx) => {
 	if (builder.ask_meta) {
 		await ctx.reply("El bot necesita información adicional para funcionar.");
 		await manager.setupTempBot(bot_to_create.data.id, bot_to_create.bot);
-		meta = await builder.ask_meta(bot_to_create.bot as any, conversation, ctx, bot_to_create.data);
+		try {
+			meta = await builder.ask_meta(bot_to_create.bot as any, conversation, ctx, bot_to_create.data);
+		} catch (error) {
+			console.error(error);
+			return await ctx.reply("Hubo un error al obtener la información adicional.");
+		}
 		await ctx.reply(`Información adicional:\n${JSON.stringify(meta, null, 1)}`);
 	}
 
