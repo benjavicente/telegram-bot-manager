@@ -1,7 +1,7 @@
 import { Chat, MessageEntity, Update } from "grammy/types";
 import { BotBuilder, BotRecord } from "../api/types.js";
 import { manager, db } from "../api/index.js";
-import { Context, InlineKeyboard } from "grammy";
+import { Context, InlineKeyboard, Filter } from "grammy";
 import { limit } from "@grammyjs/ratelimiter";
 
 class TrackJoinedGroups {
@@ -41,6 +41,13 @@ function moveEntities(entities: MessageEntity[], by: number) {
 		new_entities.push({ ...entity, offset: entity.offset + by });
 	}
 	return new_entities;
+}
+
+function getCaptionMeta(ctx: Filter<Context & { prefix: string; is_owner: boolean }, "message">) {
+	const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
+	const caption = `${ctx.prefix}${ctx.message.caption ?? ""}`;
+	const has_spoiler = ctx.message.has_media_spoiler ?? false;
+	return { caption_entities, caption, has_spoiler };
 }
 
 export default {
@@ -111,7 +118,7 @@ export default {
 			// Setear propietario
 			ctx.is_owner = ctx.from?.id === record.user_id;
 			// El limite es solo para los no propietarios
-			if (!ctx.is_owner) return limitMiddleware(ctx, next);
+			if (!ctx.is_owner) return limitMiddleware(ctx as any, next);
 			return next();
 		});
 
@@ -142,6 +149,7 @@ export default {
 				await db.collection("bots").update<BotRecord>(record.id, { meta, ...record });
 			} catch (e) {
 				console.error(e);
+				meta.counter--;
 				await ctx.reply("No se pudo enviar la confesión.");
 			}
 		});
@@ -151,28 +159,22 @@ export default {
 			await ctx.api.sendMessage(meta.group_id, `${ctx.prefix}${ctx.message.text}`, { entities });
 		});
 		bot.on("message:photo", async (ctx) => {
-			const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
-			await ctx.api.sendPhoto(meta.group_id, ctx.message.photo[0].file_id, { caption: `${ctx.prefix}${ctx.message.caption ?? ""}`, caption_entities });
+			await ctx.api.sendPhoto(meta.group_id, ctx.message.photo[0].file_id, getCaptionMeta(ctx));
 		});
 		bot.on("message:video", async (ctx) => {
-			const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
-			await ctx.api.sendVideo(meta.group_id, ctx.message.video.file_id, { caption: `${ctx.prefix}${ctx.message.caption ?? ""}`, caption_entities });
+			await ctx.api.sendVideo(meta.group_id, ctx.message.video.file_id, getCaptionMeta(ctx));
 		});
 		bot.on("message:animation", async (ctx) => {
-			const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
-			await ctx.api.sendAnimation(meta.group_id, ctx.message.animation.file_id, { caption: `${ctx.prefix}${ctx.message.caption ?? ""}`, caption_entities });
+			await ctx.api.sendAnimation(meta.group_id, ctx.message.animation.file_id, getCaptionMeta(ctx));
 		});
 		bot.on("message:audio", async (ctx) => {
-			const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
-			await ctx.api.sendAudio(meta.group_id, ctx.message.audio.file_id, { caption: `${ctx.prefix}${ctx.message.caption ?? ""}`, caption_entities });
+			await ctx.api.sendAudio(meta.group_id, ctx.message.audio.file_id, getCaptionMeta(ctx));
 		});
 		bot.on("message:voice", async (ctx) => {
-			const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
-			await ctx.api.sendVoice(meta.group_id, ctx.message.voice.file_id, { caption: `${ctx.prefix}${ctx.message.caption ?? ""}`, caption_entities });
+			await ctx.api.sendVoice(meta.group_id, ctx.message.voice.file_id, getCaptionMeta(ctx));
 		});
 		bot.on("message:document", async (ctx) => {
-			const caption_entities = moveEntities(ctx.message.caption_entities ?? [], ctx.prefix.length);
-			await ctx.api.sendDocument(meta.group_id, ctx.message.document.file_id, { caption: `${ctx.prefix}${ctx.message.caption ?? ""}`, caption_entities });
+			await ctx.api.sendDocument(meta.group_id, ctx.message.document.file_id, getCaptionMeta(ctx));
 		});
 		bot.on("message:sticker", async (ctx) => {
 			await ctx.api.sendSticker(meta.group_id, ctx.message.sticker.file_id);
