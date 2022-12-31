@@ -1,6 +1,5 @@
 import type { Bot, Context, Middleware } from "grammy";
 import type { Update, UserFromGetMe } from "grammy/types";
-import type { HydrateFlavor } from "@grammyjs/hydrate";
 import type { Conversation, ConversationFlavor } from "@grammyjs/conversations";
 import type PocketBase from "pocketbase";
 
@@ -8,7 +7,7 @@ export { ManagerBot } from "./manager.js";
 
 export type DB = PocketBase;
 
-export type BotContext = HydrateFlavor<Context & ConversationFlavor>;
+export type BotContext = Context & ConversationFlavor;
 
 export type BotConversation = Conversation<BotContext>;
 export type ConversationFn<T = any> = (conversation: BotConversation, ctx: BotContext) => Promise<T>;

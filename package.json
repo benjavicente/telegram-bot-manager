@@ -8,7 +8,6 @@
 	},
 	"dependencies": {
 		"@grammyjs/conversations": "^1.1.0",
-		"@grammyjs/hydrate": "^1.3.0",
 		"@grammyjs/menu": "^1.1.2",
 		"@grammyjs/ratelimiter": "^1.1.6",
 		"@koa/router": "^12.0.0",

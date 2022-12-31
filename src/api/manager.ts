@@ -1,7 +1,6 @@
 import { conversations } from "@grammyjs/conversations";
 import { db, dbHealthCheck } from "./db.js";
 import { Bot, session } from "grammy";
-import { hydrate } from "@grammyjs/hydrate";
 import { BotBuilder, BotContext, BotRecord, Command, HandleTempBotUpdate, ManagedBot } from "./types.js";
 
 import { loadModules } from "./utils.js";
@@ -22,7 +21,6 @@ export class ManagerBot {
 		this.webhook_url = WEBHOOK_URL;
 		this.bot = new Bot<BotContext>(BOT_TOKEN);
 
-		this.bot.use(hydrate());
 		this.bot.use(session({ initial: () => ({}) }));
 		this.bot.use(conversations());
 	}
@@ -71,7 +69,6 @@ export class ManagerBot {
 	}
 
 	async setupTempBot(id: number, bot: Bot<any>) {
-		bot.use(hydrate());
 		await bot.api.setWebhook(`${this.webhook_url}/temp/${id}`);
 	}
 
@@ -110,7 +107,6 @@ export class ManagerBot {
 
 		const bot = new Bot<BotContext>(record.bot_token);
 
-		bot.use(hydrate());
 		await builder.attach_to_instance(bot, record);
 		await bot.api.setWebhook(`${this.webhook_url}/${record.bot_id}`);
 		await bot.init();
