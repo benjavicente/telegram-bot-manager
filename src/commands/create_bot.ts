@@ -1,7 +1,6 @@
 import { createConversation } from "@grammyjs/conversations";
 import { Bot, Keyboard } from "grammy";
 
-import { UserFromGetMe } from "grammy/types";
 import { manager } from "../api/index.js";
 import { Command, BotContext, ConversationFn } from "../api/types.js";
 
@@ -50,7 +49,7 @@ const create_bot_conversation: ConversationFn = async (conversation, ctx) => {
 		await ctx.reply("El bot necesita información adicional para funcionar.");
 		await manager.setupTempBot(bot_to_create.data.id, bot_to_create.bot);
 		try {
-			meta = await builder.ask_meta(bot_to_create.bot as any, conversation, ctx, bot_to_create.data);
+			meta = await builder.ask_meta(ctx, conversation, bot_to_create.bot as any, bot_to_create.data);
 		} catch (error) {
 			console.error(error);
 			return await ctx.reply("Hubo un error al obtener la información adicional.");

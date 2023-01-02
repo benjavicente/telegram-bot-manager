@@ -1,4 +1,4 @@
-# Bot Manager
+# Bot Manager para el DCC
 
 Bot manager busca ser una herramienta para dejar multiples bots de 
 telegram corriendo en un mismo servidor, con la posibilidad de 

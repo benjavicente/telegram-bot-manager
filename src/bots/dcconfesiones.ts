@@ -54,7 +54,7 @@ export default {
 	slug: "dcconfesiones",
 	name: "DCConfesiones",
 	description: "Backend para el bot DCConfesiones.",
-	async ask_meta(bot, conversation, ctx, { id }) {
+	async ask_meta(ctx, conversation, bot, { id }) {
 		// Get group
 		await conversation.external(() => tracker.startTracking(id));
 
