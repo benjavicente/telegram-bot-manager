@@ -43,9 +43,12 @@ export default {
 					const date_str = `${date.getDate()}/${(date.getMonth() + 1).toString().padStart(2, "0")}`;
 					return `\- <b><a href="${a.message_url}">${a.course.trim()}</a></b> [<i>hasta ${date_str}</i>]`;
 				});
+				// ToDo: ver como no dejar esto tan hard-codeado
 				let msg = `<b><u>Ayudantías</u></b>\n${a_li.join("\n")}`;
 				msg += "\n\nEl resto de las ayudantías se postula via Siding";
-				msg += "o no han partido un proceso de postulación aparte.";
+				msg += " o no han partido un proceso de postulación especial aparte aún.\n";
+				msg += "Las postulaciones en Siding son desde el 27 de febrero hasta el <b>19 de marzo</b>.\n";
+				msg += "PD: Acuérdense de los cursos de ayudantes!";
 				await ctx.reply(msg, { parse_mode: "HTML" });
 			} catch (error) {
 				console.error(error);
