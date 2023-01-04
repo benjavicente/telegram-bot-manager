@@ -44,7 +44,8 @@ export default {
 					return `\- <b><a href="${a.message_url}">${a.course.trim()}</a></b> [<i>hasta ${date_str}</i>]`;
 				});
 				let msg = `<b><u>Ayudantías</u></b>\n${a_li.join("\n")}`;
-				msg += `\n\nEl resto de las ayudantías se postula via Siding`;
+				msg += "\n\nEl resto de las ayudantías se postula via Siding";
+				msg += "o no han partido un proceso de postulación aparte.";
 				await ctx.reply(msg, { parse_mode: "HTML" });
 			} catch (error) {
 				console.error(error);
