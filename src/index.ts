@@ -2,7 +2,7 @@ import Koa from "koa";
 import Router from "@koa/router";
 import bodyparser from "koa-bodyparser";
 
-import { db, manager } from "./api/index.js";
+import { manager } from "./api/index.js";
 
 const app = new Koa();
 const router = new Router();
