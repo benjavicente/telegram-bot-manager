@@ -43,7 +43,9 @@ export default {
 					const date_str = `${date.getDate()}/${(date.getMonth() + 1).toString().padStart(2, "0")}`;
 					return `\- <b><a href="${a.message_url}">${a.course.trim()}</a></b> [<i>hasta ${date_str}</i>]`;
 				});
-				await ctx.reply(a_li.join("\n"), { parse_mode: "HTML" });
+				let msg = `<b><u>Ayudantías</u></b>\n${a_li.join("\n")}`;
+				msg += `\n\nEl resto de las ayudantías se postula via Siding`;
+				await ctx.reply(msg, { parse_mode: "HTML" });
 			} catch (error) {
 				console.error(error);
 				await ctx.reply("Error al obtener ayudantías");

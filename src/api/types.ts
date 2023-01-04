@@ -42,6 +42,6 @@ export type BotBuilder<M extends {} = {}, C extends {} = {}> = {
 	slug: string;
 	name: string;
 	description: string;
-	ask_meta?: (bot: Bot<BotContext>, conversation: BotConversation, ctx: BotContext, data: UserFromGetMe) => Promise<M>;
+	ask_meta?: (ctx: BotContext, conversation: BotConversation, bot: Bot<BotContext>, data: UserFromGetMe) => Promise<M>;
 	attach_to_instance: (bot: Bot<BotContext & C>, record: BotRecord<M>) => Promise<void>;
 };
