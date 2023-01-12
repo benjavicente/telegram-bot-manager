@@ -61,7 +61,7 @@ export default {
                     const coords: CoursesCoords[] = coursesCoords.filter((coordis) => coordis.course_id === course.id);
                     
                     // console.log("COORDS", coords);
-                    const textArray = [`\<b>${course.code} - ${course.name}</b>`];
+                    const textArray = [`\<b>${course.code} ${course.name}</b>`];
                     if (coords) {
                         textArray.push(...coords.map((coord) => {
                             if (coord.name) {
