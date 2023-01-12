@@ -6,7 +6,8 @@ export async function dbHealthCheck() {
 	try {
 		const response = await db.health.check();
 		if (response.code !== 200) throw response.message;
-	} catch {
+	} catch (error) {
+		console.error(error);
 		throw new Error("Database is not healthy");
 	}
 }
