@@ -1,4 +1,5 @@
 import { BotBuilder } from "api/types.js";
+import { stringify } from "querystring";
 
 type Ayudantia = {
 	closes_at: string;
@@ -40,8 +41,11 @@ export default {
 
 				const a_li = ayudantias.sort(byDate((e) => e.closes_at)).map((a) => {
 					const date = new Date(a.closes_at);
+					const dateNow = new Date();
 					const date_str = `${date.getDate()}/${(date.getMonth() + 1).toString().padStart(2, "0")}`;
-					return `\- <b><a href="${a.message_url}">${a.course.trim()}</a></b> [<i>hasta ${date_str}</i>]`;
+					let aInfo = `\- <b><a href="${a.message_url}">${a.course.trim()}</a></b> [<i>hasta ${date_str}</i>]`;
+					if (dateNow > date) aInfo = "<del>" + aInfo + "</del>";
+					return aInfo;
 				});
 				// ToDo: ver como no dejar esto tan hard-codeado
 				let msg = `<b><u>Ayudantías</u></b>\n${a_li.join("\n")}`;
